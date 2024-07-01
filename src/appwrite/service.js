@@ -130,7 +130,7 @@ class Service {
   }
 
   //file preview
-  async previewFile(fileId) {
+  async getFilePreview(fileId) {
     try {
       return await this.storage.getFilePreview(
         config.appWriteBucketId, 
