@@ -1,38 +1,30 @@
-import React, {useState} from "react";
-import { useNavigate } from "react-router-dom";
-import authService from "../appwrite/auth";
-import { Button, Logo } from "./index";
-import Input from "./Input";
-import { useDispatch } from "react-redux";
-import { useForm } from "react-hook-form";
-import {login as authLogin} from '../store/features/authSlice'
+import React, {useState} from 'react'
+import {Link, useNavigate} from 'react-router-dom'
+import { login as authLogin } from '../store/authSlice'
+import {Button, Input, Logo} from "./index"
+import {useDispatch} from "react-redux"
+import authService from "../appwrite/auth"
+import {useForm} from "react-hook-form"
 
-const Login = () => {
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
+function Login() {
+    const navigate = useNavigate()
+    const dispatch = useDispatch()
+    const {register, handleSubmit} = useForm()
+    const [error, setError] = useState("")
 
-  const {register, handleSubmit} = useForm();
-  
-  const [error, setError] = useState("");
-
-  const login = async(data) => {
-    setError("");
-
-    try {
-        const session = await authService.login(data);
-
-        if(session){
-            const userData = await authService.getCurrentUser();
-
-            if(userData) dispatch(authLogin(userData))
-            navigate('/')
+    const login = async(data) => {
+        setError("")
+        try {
+            const session = await authService.login(data)
+            if (session) {
+                const userData = await authService.getCurrentUser()
+                if(userData) dispatch(authLogin(userData));
+                navigate("/")
+            }
+        } catch (error) {
+            setError(error.message)
         }
-
-    } catch (error) {
-        setError(error.message)
     }
-
-  }
 
   return (
     <div
@@ -62,12 +54,10 @@ const Login = () => {
                 placeholder="Enter your email"
                 type="email"
                 {...register("email", {
-                    require: true,
+                    required: true,
                     validate: {
-                        matchPatern: (value) => {
-                            /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(value) ||
-                            "Email must be a valid address"
-                        } 
+                        matchPatern: (value) => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(value) ||
+                        "Email address must be a valid address",
                     }
                 })}
                 />
@@ -88,6 +78,6 @@ const Login = () => {
         </div>
     </div>
   )
-};
+}
 
-export default Login;
+export default Login
